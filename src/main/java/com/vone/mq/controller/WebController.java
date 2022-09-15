@@ -12,6 +12,7 @@ import com.vone.mq.dto.CreateOrderRes;
 import com.vone.mq.service.WebService;
 import com.vone.mq.utils.ResUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -202,6 +203,20 @@ public class WebController {
             return ResUtil.error("请传入订单编号");
         }
         return webService.checkOrder(orderId);
+
+    }
+
+    /**
+     * 根据商户订单号查询订单状态
+     * @param payId
+     * @return
+     */
+    @RequestMapping("/checkOrderByPayId")
+    public CommonRes checkOrderByPayId(String payId) {
+        if (StringUtils.isEmpty(payId)) {
+            return ResUtil.error("请传入订单编号");
+        }
+        return webService.checkOrderByPayId(payId);
 
     }
 

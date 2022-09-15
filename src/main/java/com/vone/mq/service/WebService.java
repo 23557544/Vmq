@@ -293,6 +293,30 @@ public class WebService {
         return ResUtil.success(url+"?"+p);
     }
 
+    public CommonRes checkOrderByPayId(String payId){
+        PayOrder payOrder = payOrderDao.findByPayId(payId);
+        if (payOrder==null){
+            return ResUtil.error("商户订单编号不存在");
+        }
+        if (payOrder.getState()==0){
+            return ResUtil.error("订单未支付");
+        }
+        if (payOrder.getState()==-1){
+            return ResUtil.error("订单已过期");
+        }
+        String key = settingDao.findById("key").get().getVvalue();
+        //执行通知
+        String p = "payId="+payOrder.getPayId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
+        String sign = md5(payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key);
+        p = p+"&sign="+sign;
+        String url = payOrder.getReturnUrl();
+        if (url==null){
+            url = settingDao.findById("returnUrl").get().getVvalue();
+        }
+
+        return ResUtil.success(url+"?"+p);
+    }
+
     public CommonRes getState(String t,String sign){
 
         String key = settingDao.findById("key").get().getVvalue();
